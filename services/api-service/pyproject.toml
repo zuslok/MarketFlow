@@ -1,0 +1,10 @@
+[project]
+name="marketflow-api"
+version="0.1.0"
+dependicies=[
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "psycopg2-binary",
+    "marketflow-common"
+]

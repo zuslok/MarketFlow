@@ -1,0 +1,12 @@
+[project]
+name = "marketflow-common"
+version = "0.1.0"
+dependencies = [
+  "pydantic>=2.5",
+  "pydantic-settings>=2.1",
+  "sqlalchemy>=2.0",
+  "psycopg2-binary",
+  "celery>=5.3",
+  "kombu",
+  "python-dotenv"
+]
