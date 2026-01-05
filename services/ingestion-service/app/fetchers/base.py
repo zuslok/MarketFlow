@@ -12,7 +12,7 @@ class BaseFetcher(ABC):
         self.logger = setup_logging(f"fetcher.{source_name}")
 
     @abstractmethod
-    def fetch_price(self, symbols: str) -> Dict[str, Any]:
+    def fetch_price(self, symbol: str) -> Dict[str, Any]:
         """Current price for a symbol"""
         pass
 

@@ -22,9 +22,6 @@ queue = Queue(
 def process_message(body: dict):
     """
     Function writes one message to the db
-    
-    :param body: Description
-    :type body: dict
     """
     db = SessionLocal()
     try:
@@ -92,16 +89,15 @@ def run_consumer():
             callbacks=[lambda body, message: _handle(body, message)],
             accept=["json"]
         ):
-            print("🚀 ETL Consumer started. Waiting for messages...")
+            print("ETL Consumer started. Waiting for messages...")
             try:
                 while True:
                     try:
                         conn.drain_events(timeout=1)
                     except SocketTimeout:
-                        # no message - normal case
                         continue
             except KeyboardInterrupt:
-                print("\n🛑 Consumer stopped by user")
+                print("Consumer stopped by user")
                 sys.exit(0)
                 
 def _handle(body, message):
