@@ -43,7 +43,7 @@ graph TD
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/MarketFlow.git
+   git clone https://github.com/zuslok/MarketFlow.git
    cd MarketFlow
    ```
 2. Set up environment variables:
