@@ -8,8 +8,8 @@ celery_app = Celery(
     broker=settings.rabbitmq_url,
     backend=settings.redis_url,
     include=[
-        "services.ingestion-service.app.tasks",
-        "services.etl-service.app.tasks"
+        "services.ingestion_service.app.tasks",
+        "services.etl_service.app.tasks"
     ]
 )
 

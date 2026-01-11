@@ -1,0 +1,174 @@
+version: "3.9"
+
+services:
+  # ============== INFRASTRUCTURE ==============
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: marketflow-rabbitmq
+    ports:
+      - "5672:5672" #AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-marketflow}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-marketflow}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - marketflow-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: marketflow-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - marketflow-net
+
+  postgres:
+    image: postgres:17
+    container_name: marketflow-postgres
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-marketflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-marketflow}
+      POSTGRES_DB: ${POSTGRES_DB:-marketflow}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketflow -d marketflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - marketflow-net
+
+  # ============== CELERY BEAT (SCHEDULER) ==============
+  celery-beat:
+    build:
+      context: .
+      dockerfile: docker/celery.Dockerfile
+    container_name: marketflow-celery-beat
+    environment:
+      - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
+      - REDIS_URL=redis://redis:6379/0
+      - DB_URL=postgresql+psycopg2://marketflow:marketflow@postgres:5432/marketflow
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services:/app/services
+      - celerybeat-data:/var/lib/celery/beat
+    command: celery -A common.celery_app beat --loglevel=INFO -s /var/lib/celery/beat/celerybeat-schedule
+    networks:
+      - marketflow-net
+
+  # ============== CELERY WORKERS ==============
+  celery-ingestion-worker:
+    build:
+      context: .
+      dockerfile: docker/celery.Dockerfile
+    container_name: marketflow-celery-ingestion
+    command: >
+      celery -A common.celery_app worker
+      --queues=ingestion.crypto,ingestion.equity,ingestion.commodity,ingestion.bond
+      --loglevel=INFO
+      --concurrency=2
+    environment:
+      - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
+      - REDIS_URL=redis://redis:6379/0
+      - DB_URL=postgresql+psycopg2://marketflow:marketflow@postgres:5432/marketflow
+      - BINANCE_API_KEY=${BINANCE_API_KEY}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - marketflow-net
+
+  celery-etl-worker:
+    build:
+      context: .
+      dockerfile: docker/celery.Dockerfile
+    container_name: marketflow-celery-etl
+    command: >
+      celery -A common.celery_app worker
+      --queues=etl.crypto,etl.equity,etl.commodity,etl.bond
+      --loglevel=INFO
+      --concurrency=4
+    environment:
+      - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
+      - REDIS_URL=redis://redis:6379/0
+      - DB_URL=postgresql+psycopg2://marketflow:marketflow@postgres:5432/marketflow
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - marketflow-net
+
+  # ============== FLOWER (MONITORING) ==============
+  flower:
+    build:
+      context: .
+      dockerfile: docker/celery.Dockerfile
+    container_name: marketflow-flower
+    command: celery -A common.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+      - redis
+    networks:
+      - marketflow-net
+
+  # ============== API SERVICE ==============
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    container_name: marketflow-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=postgresql+psycopg2://marketflow:marketflow@postgres:5432/marketflow
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - marketflow-net
+
+networks:
+  marketflow-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+  celerybeat-data:
