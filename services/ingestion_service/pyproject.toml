@@ -5,6 +5,11 @@ dependencies = [
   "fastapi",
   "uvicorn",
   "pydantic",
-  "marketflow-common",
-  "APScheduler"
+  "marketflow-common"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio"
 ]

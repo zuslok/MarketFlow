@@ -8,3 +8,11 @@ dependencies=[
     "psycopg2-binary",
     "marketflow-common"
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "httpx"
+]

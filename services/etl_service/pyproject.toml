@@ -7,3 +7,10 @@ dependencies = [
   "pydantic>=2.5",
   "marketflow-common"
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov"
+]

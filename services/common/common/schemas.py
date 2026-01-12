@@ -16,13 +16,6 @@ class DataSource(str, Enum):
     ALPHA_VANTAGE = "alpha_vantage"
 
 # Request Schemas
-class IngestRequest(BaseModel):
-    symbol: str = Field(..., min_length=1, max_length=50) # required 
-    asset_type: AssetType
-    source: DataSource
-    price: float = Field(..., gt=0) # required 
-    volume: Optional[float] = Field(default=None, ge=0)
-
 class PriceHistoryRequest(BaseModel):
     symbol: str
     limit: int = Field(default=200, le=1000, ge=1)
