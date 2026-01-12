@@ -5,7 +5,9 @@ dependencies = [
   "fastapi",
   "uvicorn",
   "pydantic",
-  "marketflow-common"
+  "marketflow-common",
+  "httpx",
+  "yfinance"
 ]
 
 [project.optional-dependencies]

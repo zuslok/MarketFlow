@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
-from api_service.app.main import app
-from common.models import Price
+from services.api_service.app.main import app
+from services.common.common.models import Price
 from datetime import datetime
 
 client = TestClient(app)

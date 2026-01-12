@@ -1,5 +1,5 @@
-from etl_service.app.tasks import _calculate_symbol_metrics
-from common.models import Price
+from services.etl_service.app.tasks import _calculate_symbol_metrics
+from services.common.common.models import Price
 from datetime import datetime, timedelta
 
 def test_rsi_calculation_logic(db_session, sample_symbol):

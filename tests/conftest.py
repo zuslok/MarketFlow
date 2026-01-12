@@ -1,13 +1,16 @@
 import pytest
 import os
-from common.db import Base, engine, SessionLocal
-from common.models import Symbol
+from services.common.common.config import settings
+from services.common.common.db import engine, SessionLocal
+from services.common.common.models import Base, Symbol
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():
     """Create a clean database for the entire test session."""
-    # Ensure we're using a test database (safeguard)
-    db_url = os.getenv("DB_URL", "")
+    # Use environment variable if set, otherwise use default from settings (isolated test DB)
+    db_url = os.getenv("DB_URL_TEST") or settings.db_url_test
+    
+    # Ensure we're using a test or local database (safeguard)
     if "test" not in db_url.lower() and "localhost" not in db_url.lower():
         pytest.fail(f"Safety check failed: DB_URL '{db_url}' does not look like a test database.")
         

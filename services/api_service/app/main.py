@@ -18,7 +18,7 @@ def get_symbols(db: Session = Depends(get_db)):
     ).mappings().all()
     return result
         
-@app.get("/prices/history")
+@app.get("/prices/{symbol}")
 def get_price_history(symbol: str, limit: int = Query(200, le=1000), db: Session = Depends(get_db)):
     result = db.execute(
         text(
@@ -40,4 +40,4 @@ def get_price_history(symbol: str, limit: int = Query(200, le=1000), db: Session
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "healthy"}

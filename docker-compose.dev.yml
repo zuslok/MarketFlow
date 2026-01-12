@@ -1,10 +1,11 @@
 version: "3.9"
+name: marketflow-dev
 
 services:
   # ============== INFRASTRUCTURE ==============
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: marketflow-rabbitmq
+    container_name: marketflow-rabbitmq-dev
     ports:
       - "5672:5672" #AMQP
       - "15672:15672" # Management UI
@@ -21,7 +22,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: marketflow-redis
+    container_name: marketflow-redis-dev
     ports:
       - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
@@ -37,7 +38,7 @@ services:
 
   postgres:
     image: postgres:17
-    container_name: marketflow-postgres
+    container_name: marketflow-postgres-dev
     ports:
       - "55432:5432"
     environment:
@@ -54,12 +55,24 @@ services:
     networks:
       - marketflow-net
 
+  postgres-test:
+    image: postgres:17
+    container_name: marketflow-postgres-test-dev
+    ports:
+      - "55433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-marketflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-marketflow}
+      POSTGRES_DB: marketflow_test
+    networks:
+      - marketflow-net
+
   # ============== CELERY BEAT (SCHEDULER) ==============
   celery-beat:
     build:
       context: .
       dockerfile: docker/celery.Dockerfile
-    container_name: marketflow-celery-beat
+    container_name: marketflow-celery-beat-dev
     environment:
       - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
       - REDIS_URL=redis://redis:6379/0
@@ -81,7 +94,7 @@ services:
     build:
       context: .
       dockerfile: docker/celery.Dockerfile
-    container_name: marketflow-celery-ingestion
+    container_name: marketflow-celery-ingestion-dev
     command: >
       celery -A common.celery_app worker
       --queues=ingestion.crypto,ingestion.equity,ingestion.commodity,ingestion.bond
@@ -91,8 +104,6 @@ services:
       - RABBITMQ_URL=amqp://marketflow:marketflow@rabbitmq:5672//
       - REDIS_URL=redis://redis:6379/0
       - DB_URL=postgresql+psycopg2://marketflow:marketflow@postgres:5432/marketflow
-      - BINANCE_API_KEY=${BINANCE_API_KEY}
-      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -107,7 +118,7 @@ services:
     build:
       context: .
       dockerfile: docker/celery.Dockerfile
-    container_name: marketflow-celery-etl
+    container_name: marketflow-celery-etl-dev
     command: >
       celery -A common.celery_app worker
       --queues=etl.crypto,etl.equity,etl.commodity,etl.bond
@@ -132,7 +143,7 @@ services:
     build:
       context: .
       dockerfile: docker/celery.Dockerfile
-    container_name: marketflow-flower
+    container_name: marketflow-flower-dev
     command: celery -A common.celery_app flower --port=5555
     ports:
       - "5555:5555"
@@ -150,7 +161,7 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-    container_name: marketflow-api
+    container_name: marketflow-api-dev
     ports:
       - "8000:8000"
     environment:

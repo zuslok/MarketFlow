@@ -6,7 +6,8 @@ dependencies=[
     "uvicorn",
     "sqlalchemy",
     "psycopg2-binary",
-    "marketflow-common"
+    "marketflow-common",
+  "httpx"
 ]
 
 [project.optional-dependencies]

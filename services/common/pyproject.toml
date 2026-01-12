@@ -8,5 +8,6 @@ dependencies = [
   "psycopg2-binary",
   "celery>=5.3",
   "kombu",
-  "python-dotenv"
+  "python-dotenv",
+  "httpx"
 ]
