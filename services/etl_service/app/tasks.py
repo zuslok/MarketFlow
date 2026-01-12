@@ -102,7 +102,7 @@ def calculate_metrics(self, asset_type: str):
         # Get active symbols for this asset type
         symbols = db.query(Symbol).filter(
             Symbol.asset_type == asset_type,
-            Symbol.is_active == True
+            Symbol.is_active
         ).all()
         
         processed = 0

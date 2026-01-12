@@ -1,8 +1,7 @@
 import pytest
 import os
-from sqlalchemy import create_all_metadata
 from common.db import Base, engine, SessionLocal
-from common.models import Symbol, Price, DailyMetric
+from common.models import Symbol
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():

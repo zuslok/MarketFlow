@@ -1,5 +1,5 @@
 import pytest
-from common.schemas import PriceHistoryRequest, AssetType, DataSource
+from common.schemas import PriceHistoryRequest, AssetType
 from datetime import datetime
 
 def test_price_history_request_schema():

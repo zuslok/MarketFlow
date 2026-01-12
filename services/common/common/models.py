@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint, Date, Numeric, Text
+from sqlalchemy import Integer, String, Float, DateTime, Boolean, ForeignKey, UniqueConstraint, Date, Text
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from datetime import datetime, timezone, date
 from typing import List, Optional
-from .db import engine
 
 class Base(DeclarativeBase):
     pass

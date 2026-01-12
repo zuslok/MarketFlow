@@ -6,7 +6,7 @@ from common.celery_app import celery_app
 from common.logging_config import setup_logging
 
 # Import tasks
-from . import tasks 
+from . import tasks  # noqa: F401
 
 logger = setup_logging("etl-worker")
 

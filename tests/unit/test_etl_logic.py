@@ -1,4 +1,3 @@
-import pytest
 from etl_service.app.tasks import _calculate_symbol_metrics
 from common.models import Price
 from datetime import datetime, timedelta

@@ -31,15 +31,15 @@ class BaseFetcher(ABC):
         high: Optional[float] = None,
         low: Optional[float] = None,
     ) -> Dict[str, Any]:
-    """Creates standard payload"""
-    return {
-        "symbol": symbol,
-        "asset_type": asset_type,
-        "source": self.source_name,
-        "price": price,
-        "volume": volume,
-        "open": open_price,
-        "high": high,
-        "low": low,
-        "ts": datetime.utcnow().isoformat()
-    }
+        """Creates standard payload"""
+        return {
+            "symbol": symbol,
+            "asset_type": asset_type,
+            "source": self.source_name,
+            "price": price,
+            "volume": volume,
+            "open": open_price,
+            "high": high,
+            "low": low,
+            "ts": datetime.utcnow().isoformat()
+        }

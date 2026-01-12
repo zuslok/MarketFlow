@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from api_service.app.main import app
 from common.models import Price
