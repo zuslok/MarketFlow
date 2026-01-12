@@ -1,5 +1,5 @@
 import yfinance as yf
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from .base import BaseFetcher
 from common.exceptions import DataFetchError
 from common.schemas import AssetType
@@ -46,7 +46,7 @@ class BondFetcher(BaseFetcher):
         except Exception as e:
             raise DataFetchError("yahoo_bonds", symbol, str(e))
     
-    def fetch_batch(self, symbols: List[str] = None) -> List[Dict[str, Any]]:
+    def fetch_batch(self, symbols: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         symbols = symbols or ["US10Y"]
         results = []
         

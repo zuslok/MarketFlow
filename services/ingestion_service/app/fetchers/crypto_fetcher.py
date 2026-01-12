@@ -2,7 +2,7 @@ from common.exceptions import DataFetchError
 from common.schemas import AssetType
 from common.exceptions import RateLimitError
 import httpx
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 from .base import BaseFetcher
 
 class CryptoFetcher(BaseFetcher):
@@ -47,7 +47,7 @@ class CryptoFetcher(BaseFetcher):
         except httpx.HTTPError as e:
             raise DataFetchError("binance", symbol, str(e))
 
-    def fetch_batch(self, symbols: List[str] = None) -> List[Dict[str, Any]]:
+    def fetch_batch(self, symbols: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """Fetches prices of all crypto symbols"""
         symbols = symbols or self.SYMBOLS
         results = []

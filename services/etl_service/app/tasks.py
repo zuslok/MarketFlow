@@ -169,10 +169,10 @@ def _calculate_symbol_metrics(db, symbol: Symbol):
     avg_loss = sum(losses) / 14 if losses else 0
     
     if avg_loss == 0:
-        rsi_14 = 100
+        rsi_14 = 100.0
     else:
         rs = avg_gain / avg_loss
-        rsi_14 = 100 - (100 / (1 + rs))
+        rsi_14 = 100.0 - (100.0 / (1.0 + rs))
     
     # Volatility (20-day standard deviation)
     if len(closes) >= 20:
