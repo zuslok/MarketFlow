@@ -23,7 +23,7 @@ def test_rsi_calculation_logic(db_session, sample_symbol):
     _calculate_symbol_metrics(db_session, sample_symbol)
     
     # Check if metrics were saved
-    from common.models import DailyMetric
+    from services.common.common.models import DailyMetric
     metric = db_session.query(DailyMetric).filter_by(symbol_id=sample_symbol.id).first()
     
     assert metric is not None

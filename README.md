@@ -1,67 +1,76 @@
 # 🚀 MarketFlow: Financial Data ETL Platform
 
-MarketFlow is an asynchronous, fault-tolerant, and scalable financial data ETL (Extract, Transform, Load) platform designed to handle real-time and historical data from various sources including Crypto, Equities, Indices, and Forex.
+![CI Pipeline](https://github.com/zuslok/MarketFlow/actions/workflows/ci.yml/badge.svg)
 
-## 🌟 Mission
-To provide a professional-grade infrastructure for backend engineering development, demonstrating best practices in microservices architecture, event-driven design, and system reliability.
+MarketFlow is a professional-grade asynchronous, fault-tolerant, and scalable financial data ETL (Extract, Transform, Load) platform. It is designed to ingest real-time and historical data from diverse sources including Crypto, Equities, Commodities, and Bonds.
 
 ## 🏗️ Architecture
-MarketFlow utilizes an **Event-Driven Microservices** architecture to ensure high performance and loose coupling.
+MarketFlow utilizes an **Event-Driven Microservices** architecture with Celery workers for distributed task processing.
 
 ```mermaid
 graph TD
-    Sources[Financial Data Sources<br/>Binance, Yahoo, etc.] --> Ingestion[Ingestion Service]
+    Sources[Financial Data Sources<br/>Binance, YFinance, etc.] --> Ingestion[Ingestion Service]
     Ingestion --> RabbitMQ[RabbitMQ Message Broker]
     RabbitMQ --> ETL[ETL Service]
-    ETL --> PostgreSQL[(PostgreSQL<br/>Time-Series Data)]
-    ETL --> Redis[(Redis<br/>Cache/Celery)]
+    ETL --> PostgreSQL[(PostgreSQL<br/>Relational Data)]
+    ETL --> Redis[(Redis<br/>Celery Backend)]
     PostgreSQL --> API[API Service]
-    API --> Client[Dashboard / REST Clients]
+    API --> Client[Swagger UI / REST Clients]
 ```
 
 ## 🛠️ Tech Stack
-- **Languages:** Python 3.12+
-- **Frameworks:** FastAPI (API & Ingestion)
-- **Message Broker:** RabbitMQ
-- **Database:** PostgreSQL (Relational/Time-Series)
+- **Core:** Python 3.12, FastAPI, SQLAlchemy 2.0, Pydantic V2
+- **Data Fetching:** Httpx, yfinance
+- **Messaging:** RabbitMQ (Message Broker)
 - **Task Queue:** Celery + Redis
-- **Containerization:** Docker & Docker Compose
-- **Orchestration:** Kubernetes (Planned)
+- **Database:** PostgreSQL (with automated schema creation)
+- **Ops:** Docker, Docker Compose, GitHub Actions (CI/CD)
 
 ## 📦 Service Breakdown
-- **`ingestion-service`**: Handles data fetching from external providers and publishes events to RabbitMQ.
-- **`etl-service`**: Consumes raw data, performs normalization/cleaning, and stores it in PostgreSQL.
-- **`api-service`**: Serves processed data to end-users via RESTful endpoints.
-- **`common`**: Shared library containing database models, configurations, and core utilities.
+- **`ingestion_service`**: Fetches raw data and triggers processing tasks.
+- **`etl_service`**: Standardizes data and calculates metrics (MA, RSI).
+- **`api_service`**: Serves processed data via RESTful endpoints.
+- **`common`**: Shared logic for models, database, and configuration.
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 - Docker & Docker Compose
-- Make (Optional)
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/zuslok/MarketFlow.git
-   cd MarketFlow
-   ```
-2. Set up environment variables:
+### Local Development Setup
+1. Clone the repository and copy environment variables:
    ```bash
    cp .env.example .env
    ```
-3. Start the infrastructure and services:
+2. Start the entire stack:
    ```bash
-   docker-compose up -d --build
+   docker-compose -f docker-compose.dev.yml up -d --build
+   ```
+3. The API will automatically create all necessary database tables on startup.
+
+## 🛠️ Monitoring & Tools
+| Tool | URL | Credentials |
+| :--- | :--- | :--- |
+| **API (Swagger)** | `http://localhost:8000/docs` | None |
+| **Celery Flower** | `http://localhost:5555` | None |
+| **RabbitMQ Management** | `http://localhost:15672` | `marketflow` / `marketflow` |
+
+## 🧪 Testing
+We use `pytest` for unit and integration testing.
+
+### Running Tests Locally
+To run tests, ensure your test database container is running:
+1. Start the test DB: `docker-compose -f docker-compose.dev.yml up -d postgres-test redis`
+2. Run tests:
+   ```bash
+   export PYTHONPATH=.
+   pytest tests/
    ```
 
-## 🚀 CI/CD Pipeline (Planned)
-We are implementing a robust CI/CD pipeline using **GitHub Actions**:
-- **Continuous Integration:** Automatic linting (Ruff), type checking (MyPy), and unit testing on every push.
-- **Continuous Deployment:** Automated Docker image builds and push to Amazon ECR, followed by deployment to EKS (AWS).
-
-## 🗺️ Professional Roadmap
-For a detailed guide on how this project is evolving to a professional level, check out our [Professional Roadmap](PROFESSIONAL_ROADMAP.md).
+## � CI/CD Pipeline
+Our pipeline is automated via **GitHub Actions**:
+- **CI:** Lints (Ruff), Type checks (MyPy), and Runs Tests on every push.
+- **CD:** (Planned) Automatic deployment to AWS EKS.
 
 ## 📄 License
-This project is licensed under the MIT License.
+MIT License.
