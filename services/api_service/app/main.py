@@ -2,9 +2,14 @@ from fastapi import FastAPI, Query, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from common.db import get_db
+from common.db import get_db, engine
+from common.models import Base
 
 app = FastAPI(title="MarketFlow API")
+
+@app.on_event("startup")
+def on_startup():
+    Base.metadata.create_all(bind=engine)
 
 @app.get("/symbols")
 def get_symbols(db: Session = Depends(get_db)):    

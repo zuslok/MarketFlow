@@ -82,6 +82,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      api:
+        condition: service_healthy
     volumes:
       - ./services:/app/services
       - celerybeat-data:/var/lib/celery/beat
@@ -111,6 +113,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+      api:
+        condition: service_healthy
     networks:
       - marketflow-net
 
@@ -134,6 +138,8 @@ services:
       redis:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      api:
         condition: service_healthy
     networks:
       - marketflow-net

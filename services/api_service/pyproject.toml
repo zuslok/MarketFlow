@@ -7,7 +7,7 @@ dependencies=[
     "sqlalchemy",
     "psycopg2-binary",
     "marketflow-common",
-  "httpx"
+    "httpx"
 ]
 
 [project.optional-dependencies]

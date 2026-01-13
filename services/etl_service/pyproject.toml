@@ -5,7 +5,8 @@ dependencies = [
   "sqlalchemy>=2.0",
   "psycopg2-binary",
   "pydantic>=2.5",
-  "marketflow-common"
+  "marketflow-common",
+  "httpx"
 ]
 
 [project.optional-dependencies]

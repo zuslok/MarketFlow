@@ -6,7 +6,8 @@ dependencies = [
   "pydantic-settings>=2.1",
   "sqlalchemy>=2.0",
   "psycopg2-binary",
-  "celery>=5.3",
+  "celery[redis]>=5.3",
+  "redis",
   "kombu",
   "python-dotenv",
   "httpx"
